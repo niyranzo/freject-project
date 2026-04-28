@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: freject_backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/usr/src/app
+    working_dir: /usr/src/app
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=freject_db
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - JWT_SECRET=freject_secret
+    networks:
+      - app_network
+    depends_on:
+      - postgres
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   container_name: syntone_frontend
+  #   ports:
+  #     - "5173:5173"
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - VITE_API_URL=http://localhost:3000/api/
+  #     - CHOKIDAR_USEPOLLING=true
+  #   networks:
+  #     - app_network
+  #   depends_on:
+  #     - backend
+
+  postgres:
+    image: postgres:latest
+    container_name: freject_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: freject_db
+    networks:
+      - app_network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: freject_pgweb
+    ports:
+      - "8080:8081"
+    environment:
+      - PGWEB_DB=postgres://admin:admin@postgres:5432/freject_db?sslmode=disable
+    networks:
+      - app_network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
