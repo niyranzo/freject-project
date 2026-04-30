@@ -11,6 +11,12 @@ import taskRoutes from './routes/taskRoutes.js';
 import costRoutes from './routes/costRoutes.js';
 import requestRoutes from './routes/requestRoutes.js';
 
+const app = express();
+// MIDDLEWARES
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/clients', clientRoutes);
@@ -19,14 +25,6 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/costs', costRoutes);
 app.use('/api/requests', requestRoutes);
 
-dotenv.config();
-
-const app = express();
-
-// MIDDLEWARES
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 
 // IMPORTAR RUTAS

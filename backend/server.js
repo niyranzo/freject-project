@@ -3,8 +3,6 @@ import app from './src/app.js';
 
 import { testConnection, initDatabase } from './src/config/db.js';
 
-dotenv.config();
-
 const PORT = process.env.PORT || 3000;
 
 const startServer = async () => {

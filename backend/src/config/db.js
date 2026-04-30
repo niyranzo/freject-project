@@ -1,39 +1,52 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
 
-dotenv.config();
+// Elegir archivo correcto
+const envFile =
+  process.env.NODE_ENV === 'test'
+    ? '.env.test'
+    : '.env';
+
+// Cargar SOLO uno
+dotenv.config({
+  path: envFile,
+  override: true
+});
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
+  logging: false
 });
 
-// Función para probar la conexión
 const testConnection = async () => {
   try {
     await sequelize.authenticate();
-    console.log('Conexión a la base de datos establecida correctamente.');
+    console.log('✅ Conexión correcta');
     return true;
   } catch (error) {
-    console.error('Error al conectar con la base de datos:', error);
-    return false;
+    console.error('❌ Error conexión:', error);
+    throw error;
   }
 };
 
-// Función para inicializar tablas
-const initDatabase = async (force = true) => {
-    try {
-      await sequelize.sync({ alter: true });
-      console.log('✅ Base de datos inicializada correctamente.');
-      return true;
-    } catch (error) {
-      console.error('❌ Error al inicializar la base de datos:', error);
-      process.exit(1);
-    }
-  };
+const initDatabase = async () => {
+  try {
+    await sequelize.sync({
+      force: process.env.NODE_ENV === 'test',
+      alter: process.env.NODE_ENV !== 'test'
+    });
+
+    console.log('✅ Base de datos inicializada');
+    return true;
+  } catch (error) {
+    console.error('❌ Error DB:', error);
+    throw error;
+  }
+};
 
 export {
   sequelize,
   testConnection,
   initDatabase
-}; 
+};

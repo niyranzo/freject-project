@@ -6,9 +6,9 @@ import {
   createProject,
   updateProject,
   deleteProject
-} from '../controllers/project.controller.js';
+} from '../controllers/projectController.js';
 
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

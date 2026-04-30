@@ -6,9 +6,9 @@ import {
   createCost,
   updateCost,
   deleteCost
-} from '../controllers/cost.controller.js';
+} from '../controllers/costController.js';
 
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 

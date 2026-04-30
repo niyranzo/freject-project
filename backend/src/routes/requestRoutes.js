@@ -6,9 +6,9 @@ import {
   createRequest,
   updateRequest,
   deleteRequest
-} from '../controllers/request.controller.js';
+} from '../controllers/requestController.js';
 
-import { authMiddleware } from '../middlewares/auth.middleware.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
