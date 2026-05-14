@@ -5,7 +5,7 @@ services:
     build: ./backend
     container_name: freject_backend
     ports:
-      - "3000:3000"
+      - "4000:4000"
     volumes:
       - ./backend:/usr/src/app
     working_dir: /usr/src/app
@@ -32,7 +32,7 @@ services:
   #     - ./frontend:/app
   #     - /app/node_modules
   #   environment:
-  #     - VITE_API_URL=http://localhost:3000/api/
+  #     - VITE_API_URL=http://localhost:4000/api/
   #     - CHOKIDAR_USEPOLLING=true
   #   networks:
   #     - app_network

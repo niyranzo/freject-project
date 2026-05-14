@@ -67,7 +67,7 @@ export const login = async (req, res) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(404).json({ message: 'Credenciales incorrectas' });
     }
 
     // Comparar password
@@ -77,24 +77,83 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Credenciales incorrectas' });
     }
 
-    // Generar token
+      // Generar token
+      // generar token
     const token = jwt.sign(
       { id: user.id },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: "7d" }
     );
 
-    res.json({
-      message: 'Login exitoso',
-      token,
+    // 🍪 guardar cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // true en producción
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    // ✅ devolver usuario
+    return res.json({
       user: {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
       }
     });
 
   } catch (error) {
     res.status(500).json({ message: 'Error en el login', error });
   }
+};
+
+export const me = async (req, res) => {
+
+  try {
+
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({
+        message: "No autenticado"
+      });
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET
+    );
+
+    const user = await User.findByPk(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado"
+      });
+    }
+
+    return res.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      }
+    });
+
+  } catch (error) {
+
+    return res.status(401).json({
+      message: "Token inválido"
+    });
+
+  }
+};
+
+export const logout = async (req, res) => {
+
+  res.clearCookie("token");
+
+  return res.json({
+    message: "Sesión cerrada"
+  });
 };

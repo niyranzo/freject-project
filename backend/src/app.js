@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from "cookie-parser";
+
 
 //importar rutas
 import authRoutes from './routes/authRoutes.js';
@@ -13,7 +15,11 @@ import requestRoutes from './routes/requestRoutes.js';
 
 const app = express();
 // MIDDLEWARES
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
