@@ -14,6 +14,7 @@ const router = Router();
 
 router.get('/', authMiddleware, getRequests);
 router.get('/:id', authMiddleware, getRequest);
+router.get('/project/:projectId', authMiddleware, getRequests);
 router.post('/', authMiddleware, createRequest);
 router.put('/:id', authMiddleware, updateRequest);
 router.delete('/:id', authMiddleware, deleteRequest);

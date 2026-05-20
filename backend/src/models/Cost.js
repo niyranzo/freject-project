@@ -22,7 +22,7 @@ const Cost = sequelize.define('Cost', {
   }
 }, {
   tableName: 'Cost',
-  timestamps: false
+  timestamps: true
 });
 
 export default Cost;

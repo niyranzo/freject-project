@@ -29,6 +29,7 @@ export async function createClient(
     name: string;
     email: string;
     company: string;
+    id_user: number;
   }
 ) {
 

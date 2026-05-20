@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+:root {
+  --blackback: #212121;
+  --lightpink: #E5A5C7;
+  --lightpurple: #AD8EBF;
+  --lightgreen: #9FB196;
+  --skin:#FCF9F2;
+}
+
+@theme {
+  --color-blackback: var(--blackback);
+
+  --color-lightpink: var(--lightpink);
+  --color-lightpurple: var(--lightpurple);
+
+  --color-lightgreen: var(--lightgreen);
+  --color-skin: var(--skin);
+}

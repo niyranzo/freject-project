@@ -37,6 +37,25 @@ export const getTask = async (req, res) => {
   res.json(task);
 };
 
+export const getTasksByProject = async (req, res) => {
+  
+  const project = await Project.findOne({
+    where: { id: req.params.projectId}
+  });
+
+  if (!project) {
+    return res.status(403).json({ message: 'Proyecto no válido' });
+  }
+
+  const tasks = await Task.findAll({
+    where: {
+      id_project: req.params.projectId
+    }
+  });
+
+  res.json(tasks);
+};
+
 export const createTask = async (req, res) => {
   const project = await Project.findOne({
     where: {

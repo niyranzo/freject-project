@@ -18,7 +18,7 @@ const Request = sequelize.define('Request', {
   }
 }, {
   tableName: 'Request',
-  timestamps: false
+  timestamps: true
 });
 
 export default Request;

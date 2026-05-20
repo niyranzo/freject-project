@@ -35,7 +35,7 @@ const Project = sequelize.define('Project', {
   }
 }, {
   tableName: 'Project',
-  timestamps: false
+  timestamps: true
 });
 
 export default Project;

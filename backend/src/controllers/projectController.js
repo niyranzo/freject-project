@@ -24,12 +24,38 @@ export const getProject = async (req, res) => {
 };
 
 export const createProject = async (req, res) => {
-  const project = await Project.create({
-    ...req.body,
-    id_user: req.user.id
-  });
+  try {
 
-  res.status(201).json(project);
+    const { name, price, id_client } = req.body;
+
+    if (!name || !price) {
+      return res.status(400).json({
+        message: "Se requieren nombre y precio para crear el proyecto"
+      });
+    }
+
+    if (!id_client) {
+      return res.status(400).json({
+        message: "Se requiere un cliente para crear el proyecto"
+      });
+    }
+
+    const project = await Project.create({
+      ...req.body,
+      id_user: req.user.id
+    });
+
+    res.status(201).json(project);
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Error creando el proyecto"
+    });
+
+  }
 };
 
 export const updateProject = async (req, res) => {

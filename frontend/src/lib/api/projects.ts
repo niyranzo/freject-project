@@ -23,6 +23,29 @@ export async function getProjects() {
   return data;
 }
 
+// 📦 GET PROJECTS BY ID
+export async function getProjectById(id: number) {
+
+  const res = await fetch(
+    `${API_URL}/projects/${id}`,
+    {
+      credentials: "include",
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+
+    throw new Error(
+      data.message || "Error al obtener proyectos"
+    );
+
+  }
+
+  return data;
+}
+
 // ➕ CREATE PROJECT
 export async function createProject(
   projectData: {

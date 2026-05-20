@@ -5,7 +5,8 @@ import {
   getTask,
   createTask,
   updateTask,
-  deleteTask
+  deleteTask,
+  getTasksByProject
 } from '../controllers/taskController.js';
 
 import { authMiddleware } from '../middlewares/authMiddleware.js';
@@ -14,6 +15,7 @@ const router = Router();
 
 router.get('/', authMiddleware, getTasks);
 router.get('/:id', authMiddleware, getTask);
+router.get('/project/:projectId', authMiddleware, getTasksByProject);
 router.post('/', authMiddleware, createTask);
 router.put('/:id', authMiddleware, updateTask);
 router.delete('/:id', authMiddleware, deleteTask);

@@ -1,44 +1,149 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export default function Sidebar() {
-  const pathname = usePathname();
-
-  const items = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Proyectos", href: "/projects" },
-    { name: "Clientes", href: "/clients" },
-  ];
-
   return (
-    <aside className="w-64 bg-white border-r border-slate-100 p-5 flex flex-col">
-      
+    <aside className="w-64 border border-white/5 p-5 flex flex-col bg-[#121212] rounded-3xl m-5">
+
       {/* Logo */}
-      <div className="mb-10 text-lg font-semibold text-slate-900">
-        Freject
+      <div className="mb-10">
+        <Image
+          src="/logoblanco.png"
+          alt="Freject"
+          width={180}
+          height={180}
+        />
       </div>
 
       {/* Menu */}
-      <nav className="space-y-1">
-        {items.map((item) => {
-          const active = pathname === item.href;
+      <nav className="space-y-2">
 
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={`block px-3 py-2 rounded-xl text-sm font-medium transition ${
-                active
-                  ? "bg-violet-50 text-violet-700"
-                  : "text-slate-600 hover:bg-slate-100"
-              }`}
-            >
-              {item.name}
-            </Link>
-          );
-        })}
+        <Link
+          href="/dashboard"
+          className="
+            group
+            relative
+            flex
+            items-center
+            gap-4
+            px-4
+            py-3
+            rounded-2xl
+            text-slate-400
+            hover:text-white
+            hover:bg-white/5
+            transition-all
+            duration-300
+          "
+        >
+          {/* Left line */}
+          <span
+            className="
+              absolute
+              left-0
+              top-1/2
+              -translate-y-1/2
+              h-0
+              w-1
+              rounded-full
+              bg-[#E5A5C7]
+              transition-all
+              duration-300
+              group-hover:h-6
+            "
+          />
+
+          <i className="fa-solid fa-bars-staggered text-lg transition-all duration-300 group-hover:text-[#E5A5C7]"></i>
+
+          <span className="font-medium">
+            Dashboard
+          </span>
+        </Link>
+
+        <Link
+          href="/projects"
+          className="
+            group
+            relative
+            flex
+            items-center
+            gap-4
+            px-4
+            py-3
+            rounded-2xl
+            text-slate-400
+            hover:text-white
+            hover:bg-white/5
+            transition-all
+            duration-300
+          "
+        >
+          <span
+            className="
+              absolute
+              left-0
+              top-1/2
+              -translate-y-1/2
+              h-0
+              w-1
+              rounded-full
+              bg-[#AD8EBF]
+              transition-all
+              duration-300
+              group-hover:h-6
+            "
+          />
+
+          <i className="fa-solid fa-box-open text-lg transition-all duration-300 group-hover:text-[#AD8EBF]"></i>
+
+          <span className="font-medium">
+            Proyectos
+          </span>
+        </Link>
+
+        <Link
+          href="/clients"
+          className="
+            group
+            relative
+            flex
+            items-center
+            gap-4
+            px-4
+            py-3
+            rounded-2xl
+            text-slate-400
+            hover:text-white
+            hover:bg-white/5
+            transition-all
+            duration-300
+          "
+        >
+          <span
+            className="
+              absolute
+              left-0
+              top-1/2
+              -translate-y-1/2
+              h-0
+              w-1
+              rounded-full
+              bg-[#9FB196]
+              transition-all
+              duration-300
+              group-hover:h-6
+            "
+          />
+
+          <i className="fa-solid fa-users text-lg transition-all duration-300 group-hover:text-[#9FB196]"></i>
+
+          <span className="font-medium">
+            Clientes
+          </span>
+        </Link>
+
       </nav>
     </aside>
   );

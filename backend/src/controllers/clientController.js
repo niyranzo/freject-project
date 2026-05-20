@@ -24,12 +24,36 @@ export const getClient = async (req, res) => {
 };
 
 export const createClient = async (req, res) => {
-  const client = await Client.create({
-    ...req.body,
-    id_user: req.user.id
-  });
+   try{
+    const { name, email, company } = req.body;
+    
+    if (!name || !email || !company) {
+      return res.status(400).json({
+        message: "Se requieren nombre, email y empresa para crear el cliente"
+      });
+    }
 
-  res.status(201).json(client);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+
+      return res.status(400).json({
+        message:"El email no es válido"
+      });
+    }
+
+    const client = await Client.create({
+      ...req.body,
+      id_user: req.user.id
+    });
+
+    res.status(201).json(client);
+
+   } catch (error) {
+    res.status(500).json({
+      message: "Error creando el cliente"
+    });
+  }
 };
 
 export const updateClient = async (req, res) => {

@@ -52,7 +52,7 @@ const benefits = [
 
 export default function Benefits() {
   return (
-    <section id="beneficios" className="py-28 bg-white scroll-mt-20">
+    <section id="beneficios" className="py-28 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Label */}
