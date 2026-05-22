@@ -1,26 +1,16 @@
 "use client";
-
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IM_Fell_French_Canon } from "next/font/google";
 
 import Sidebar from "@/components/dashboard/Sidebar";
 import Topbar from "@/components/dashboard/Topbar";
+import ProjectCard from "@/components/projects/ProjectCard";
 
 import CreateProjectModal from "@/components/dashboard/modals/CreateProjectModal";
 import CreateClientModal from "@/components/dashboard/modals/CreateClientModal";
 
 import { getProjects } from "@/lib/api/projects";
 import { getClients } from "@/lib/api/clients";
-
-interface Project {
-  id: number;
-  name: string;
-  status: "pending" | "in_progress" | "completed" | "cancelled";
-  price: number;
-  create_date: string;
-  tasks?: any[];
-}
 
 const imFell = IM_Fell_French_Canon({
   subsets: ["latin"],
@@ -30,7 +20,7 @@ const imFell = IM_Fell_French_Canon({
 
 export default function ProjectsPage() {
 
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [clients, setClients] = useState<any[]>([]);
 
   const [loading, setLoading] = useState(true);
@@ -73,42 +63,6 @@ export default function ProjectsPage() {
     }
   };
 
-  const getStatusStyles = (status: string) => {
-
-    switch (status) {
-
-      case "completed":
-        return "bg-emerald-100 text-emerald-700";
-
-      case "in_progress":
-        return "bg-blue-100 text-blue-700";
-
-      case "cancelled":
-        return "bg-red-100 text-red-700";
-
-      default:
-        return "bg-amber-100 text-amber-700";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-
-    switch (status) {
-
-      case "completed":
-        return "Completado";
-
-      case "in_progress":
-        return "En progreso";
-
-      case "cancelled":
-        return "Cancelado";
-
-      default:
-        return "Pendiente";
-    }
-  };
-
   return (
 
     <div className="flex h-screen bg-skin">
@@ -129,25 +83,14 @@ export default function ProjectsPage() {
             </h2>
 
             <p className="text-slate-500 mt-2">
-              Gestiona todos tus proyectos freelance
+              Gestiona todos tus proyectos  
             </p>
 
           </div>
 
           <button
             onClick={() => setShowModal(true)}
-            className="
-              px-5
-              py-3
-              bg-violet-600
-              hover:bg-violet-700
-              text-white
-              text-sm
-              font-medium
-              rounded-2xl
-              transition
-              shadow-sm
-            "
+            className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
           >
             + Nuevo proyecto
           </button>
@@ -212,96 +155,11 @@ export default function ProjectsPage() {
           >
 
             {projects.map((project) => (
-
-              <Link
+              <ProjectCard
                 key={project.id}
-                href={`/projects/${project.id}`}
-                className="
-                  group
-                  bg-white
-                  rounded-2xl
-                  border
-                  border-slate-100
-                  shadow-sm
-                  p-5
-                  hover:shadow-md
-                  hover:border-violet-200
-                  transition-all
-                  duration-200
-                "
-              >
+                project={project}
+              />
 
-                {/* TOP */}
-                <div className="flex items-start justify-between">
-
-                  <div>
-
-                    <h3
-                      className="
-                        text-lg
-                        font-semibold
-                        text-slate-800
-                        group-hover:text-violet-600
-                        transition-colors
-                      "
-                    >
-                      {project.name}
-                    </h3>
-
-                    <p className="text-sm text-slate-400 mt-1">
-                      Creado el{" "}
-                      {new Date(
-                        project.create_date
-                      ).toLocaleDateString()}
-                    </p>
-
-                  </div>
-
-                  <span
-                    className={`
-                      px-3
-                      py-1
-                      rounded-full
-                      text-xs
-                      font-medium
-                      ${getStatusStyles(project.status)}
-                    `}
-                  >
-                    {getStatusText(project.status)}
-                  </span>
-
-                </div>
-
-                {/* STATS */}
-                <div className="grid grid-cols-2 gap-3 mt-6">
-
-                  <div className="bg-slate-50 rounded-xl p-4">
-
-                    <p className="text-xs text-slate-400">
-                      Presupuesto
-                    </p>
-
-                    <h4 className="text-lg font-semibold text-slate-800 mt-1">
-                      €{project.price}
-                    </h4>
-
-                  </div>
-
-                  <div className="bg-slate-50 rounded-xl p-4">
-
-                    <p className="text-xs text-slate-400">
-                      Tareas
-                    </p>
-
-                    <h4 className="text-lg font-semibold text-slate-800 mt-1">
-                      {project.tasks?.length || 0}
-                    </h4>
-
-                  </div>
-
-                </div>
-
-              </Link>
             ))}
           </div>
         )}

@@ -6,9 +6,9 @@ import { createProject } from "@/lib/api/projects";
 
 interface Props {
   showModal: boolean;
-  setShowModal: any;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
   clients: any[];
-  setShowClientModal: any;
+  setShowClientModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function CreateProjectModal({
@@ -64,7 +64,7 @@ export default function CreateProjectModal({
 
     <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
 
-      <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">
+      <div className="bg-skin w-full max-w-md rounded-2xl p-6 shadow-xl border border-blackback">
 
         <h2 className="text-xl font-semibold text-slate-900">
           Nuevo proyecto
@@ -79,7 +79,7 @@ export default function CreateProjectModal({
             onChange={(e) =>
               setProjectName(e.target.value)
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:blackback/50"
           />
 
           <input
@@ -89,7 +89,7 @@ export default function CreateProjectModal({
             onChange={(e) =>
               setProjectPrice(e.target.value)
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:blackback/50"
           />
 
           <select
@@ -99,7 +99,7 @@ export default function CreateProjectModal({
                 e.target.value
               )
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:blackback/50 cursor-pointer"
           >
 
             <option value="">
@@ -123,7 +123,7 @@ export default function CreateProjectModal({
             onClick={() =>
                 setShowClientModal(true)
             }
-            className="text-sm text-violet-600 hover:underline"
+            className="text-sm text-black hover:underline cursor-pointer"
             >
             + Crear nuevo cliente
         </button>
@@ -146,7 +146,7 @@ export default function CreateProjectModal({
             onClick={() =>
               setShowModal(false)
             }
-            className="px-4 py-2 rounded-xl border border-slate-200 text-sm"
+            className="px-4 py-2 rounded-xl border border-slate-200 text-sm cursor-pointer"
           >
             Cancelar
           </button>
@@ -154,7 +154,7 @@ export default function CreateProjectModal({
           <button
             onClick={handleCreateProject}
             disabled={loading}
-            className="px-4 py-2 bg-violet-600 text-white rounded-xl text-sm hover:bg-violet-700 transition"
+            className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
           >
             {loading
               ? "Creando..."

@@ -59,11 +59,67 @@ npm run test:watch
 - `src/middlewares/authMiddleware.js` - protección de rutas con JWT
 - `src/models/` - modelos Sequelize
 
+## 📚 Modelos
+
+A continuación se listan los modelos con sus atributos, tipos y restricciones (ver definiciones en `src/models/`).
+
+- **User**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `name`: STRING(255), allowNull: false
+	- `email`: STRING(100), allowNull: false, unique, validate: isEmail
+	- `password`: STRING, allowNull: false
+	- `tableName`: `User`, `timestamps`: false
+
+- **Client**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `id_user`: INTEGER, allowNull: false (FK a `User`)
+	- `name`: STRING(255), allowNull: false
+	- `email`: STRING(100), allowNull: false, unique, validate: isEmail
+	- `company`: STRING(255), allowNull: false
+	- `timestamps`: true
+
+- **Project**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `id_user`: INTEGER, allowNull: false (FK a `User`)
+	- `id_client`: INTEGER, allowNull: false (FK a `Client`)
+	- `name`: STRING(255), allowNull: false
+	- `price`: DECIMAL(10,2), allowNull: false
+	- `status`: ENUM('pending','in_progress','completed','cancelled'), defaultValue: 'pending', allowNull: false
+	- `create_date`: DATE, allowNull: false, defaultValue: NOW
+	- `timestamps`: true
+
+- **Task**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `id_project`: INTEGER, allowNull: false (FK a `Project`)
+	- `title`: STRING, allowNull: false, unique
+	- `status`: ENUM('to_do','progress','completed'), defaultValue: 'to_do'
+	- `timestamps`: true
+
+- **Request**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `id_project`: INTEGER, allowNull: false (FK a `Project`)
+	- `title`: STRING, allowNull: false, unique
+	- `timestamps`: true
+
+- **Cost**
+	- `id`: INTEGER, primaryKey, autoIncrement
+	- `id_project`: INTEGER, allowNull: false (FK a `Project`)
+	- `title`: STRING, allowNull: false, unique
+	- `amount`: DECIMAL(10,2), allowNull: false
+	- `timestamps`: true
+
+Relaciones principales (definidas en `src/models/index.js`):
+- Un `User` tiene muchos `Client` y muchos `Project`.
+- Un `Client` tiene muchos `Project`.
+- Un `Project` tiene muchas `Task`, `Request` y `Cost`.
+
 ## 📡 Endpoints principales
 
 ### Autenticación
 - `POST /api/auth/register` - registrar un usuario
-- `POST /api/auth/login` - iniciar sesión y obtener token
+- `POST /api/auth/login` - iniciar sesión (genera cookie `token`)
+- `GET /api/auth/me` - obtener datos del usuario autenticado (lee cookie `token`)
+- `POST /api/auth/logout` - cerrar sesión (elimina cookie `token`)
 
 ### Usuarios
 - `GET /api/users` - listar usuarios
@@ -86,33 +142,43 @@ npm run test:watch
 - `DELETE /api/projects/:id`
 
 ### Tareas
-- `GET /api/tasks`
-- `GET /api/tasks/:id`
-- `POST /api/tasks`
-- `PUT /api/tasks/:id`
-- `DELETE /api/tasks/:id`
+- `GET /api/tasks` - listar todas las tareas
+- `GET /api/tasks/:id` - obtener tarea por id
+- `GET /api/tasks/project/:projectId` - listar tareas de un proyecto
+- `POST /api/tasks` - crear tarea
+- `PUT /api/tasks/:id` - actualizar tarea
+- `DELETE /api/tasks/:id` - eliminar tarea
 
 ### Costos
-- `GET /api/costs`
-- `GET /api/costs/:id`
-- `POST /api/costs`
-- `PUT /api/costs/:id`
-- `DELETE /api/costs/:id`
+- `GET /api/costs` - listar costes
+- `GET /api/costs/:id` - obtener coste por id
+- `GET /api/costs/project/:projectId` - listar costes de un proyecto
+- `POST /api/costs` - crear coste
+- `PUT /api/costs/:id` - actualizar coste
+- `DELETE /api/costs/:id` - eliminar coste
 
 ### Solicitudes
-- `GET /api/requests`
-- `GET /api/requests/:id`
-- `POST /api/requests`
-- `PUT /api/requests/:id`
-- `DELETE /api/requests/:id`
+- `GET /api/requests` - listar solicitudes
+- `GET /api/requests/:id` - obtener solicitud por id
+- `GET /api/requests/project/:projectId` - listar solicitudes de un proyecto
+- `POST /api/requests` - crear solicitud
+- `PUT /api/requests/:id` - actualizar solicitud
+- `DELETE /api/requests/:id` - eliminar solicitud
 
 ## 🔐 Autenticación
 
-Las rutas de usuarios, clientes, proyectos, tareas, costos y solicitudes requieren autenticación JWT. Debes enviar el token en el header `Authorization` con formato:
+La API utiliza JWT para autenticación, pero el token se almacena y consulta a través de cookies HTTP:
 
-```http
-Authorization: Bearer <token>
-```
+- Al hacer `POST /api/auth/login` el servidor genera un JWT y lo guarda en una cookie llamada `token`.
+- La cookie tiene las siguientes propiedades (configuración en `src/controllers/authController.js`):
+	- `httpOnly: true` (no accesible desde JavaScript del cliente)
+	- `secure: false` en desarrollo (debe ser `true` en producción con HTTPS)
+	- `sameSite: 'lax'`
+	- `maxAge: 7 días`
+- El middleware de autenticación (`src/middlewares/authMiddleware.js`) lee `req.cookies.token` y valida el JWT.
+- `GET /api/auth/me` devuelve el usuario del token y `POST /api/auth/logout` limpia la cookie (`res.clearCookie('token')`).
+
+Para probar desde clientes como Postman, la forma más sencilla es usar el endpoint de login para que el servidor establezca la cookie, o enviar manualmente la cookie `token` en las peticiones autorizadas.
 
 ## ✅ Notas
 

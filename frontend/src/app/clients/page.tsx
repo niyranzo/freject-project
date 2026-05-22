@@ -1,18 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { IM_Fell_French_Canon } from "next/font/google";
 
 import Sidebar from "@/components/dashboard/Sidebar";
 import Topbar from "@/components/dashboard/Topbar";
+import { Client } from "@/interfaces/client";
 
 import {
   getClients,
   createClient
 } from "@/lib/api/clients";
 
+const imFellItalic = IM_Fell_French_Canon({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["italic"],
+});
+
+const imFell = IM_Fell_French_Canon({
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export default function ClientsPage() {
 
-  const [clients, setClients] = useState<any[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
 
   const [loading, setLoading] = useState(true);
 
@@ -29,13 +42,10 @@ export default function ClientsPage() {
     try {
 
       const data = await getClients();
-
       setClients(data);
 
     } catch (error) {
-
       console.error(error);
-
     } finally {
 
       setLoading(false);
@@ -75,7 +85,7 @@ export default function ClientsPage() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-[#f8f9fb]">
+    <div className="flex h-screen bg-skin">
 
       <Sidebar />
 
@@ -88,9 +98,9 @@ export default function ClientsPage() {
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-900">
+            <h2 className={imFellItalic.className + " text-5xl font-bold text-slate-900"}>
               Clientes
-            </h1>
+            </h2>
 
             <p className="text-slate-500 mt-1">
               Gestiona tus clientes
@@ -100,7 +110,7 @@ export default function ClientsPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-violet-600 text-white rounded-xl text-sm hover:bg-violet-700 transition"
+            className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
           >
             + Nuevo cliente
           </button>
@@ -130,24 +140,60 @@ export default function ClientsPage() {
 
           ) : (
 
-            clients.map((client: any) => (
+            clients.map((client: Client) => (
 
               <div
                 key={client.id}
-                className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm"
+                className="rounded-2xl border border-blackback shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all cursor-pointer group"
               >
+                <div className="flex justify-center bg-blackback p-4 rounded-t-2xl">
+                  <h3 className={imFell.className + " text-white text-xl"}>
+                    {client.name}
+                  </h3>
+                </div>
 
-                <h3 className="font-semibold text-slate-900">
-                  {client.name}
-                </h3>
+                <div className="space-y-3 m-5">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-blackback">
+                      Compañía
+                    </span>
 
-                <p className="text-sm text-slate-500 mt-1">
-                  {client.company}
-                </p>
+                    <span className="font-semibold text-slate-800">
+                      {client.company}
+                    </span>
 
-                <p className="text-sm text-slate-400 mt-3">
-                  {client.email}
-                </p>
+                  </div>
+
+                  <div className="h-px w-mg bg-gray-300"></div>
+
+
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-blackback">
+                      Email
+                    </span>
+
+                    <span className="font-semibold text-slate-800">
+                      {client.email}
+                    </span>
+
+                  </div>
+
+                  <div className="h-px w-mg bg-gray-300"></div>
+                  <div className="flex justify-between">
+                    <button
+                    onClick={() => setShowModal(true)}
+                    className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+                  >
+                    Editar cliente
+                  </button>
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+                  >
+                    Borrar cliente
+                  </button>
+                  </div>
+                </div>
 
               </div>
 
