@@ -1,6 +1,7 @@
-import Project from '../models/Project.js';
+import { Project, Client, } from "../models/index.js";
 
 export const getProjects = async (req, res) => {
+  console.log(req.user)
   const projects = await Project.findAll({
     where: { id_user: req.user.id }
   });
@@ -9,17 +10,23 @@ export const getProjects = async (req, res) => {
 };
 
 export const getProject = async (req, res) => {
-  const project = await Project.findOne({
-    where: {
-      id: req.params.id,
-      id_user: req.user.id
-    }
-  });
+  const project =
+    await Project.findByPk(
+      req.params.id,
+      {
+        include: [
+          {
+            model: Client,
+          },
+        ],
+      }
+    );
 
   if (!project) {
     return res.status(404).json({ message: 'Proyecto no encontrado' });
   }
 
+  console.log(project)
   res.json(project);
 };
 

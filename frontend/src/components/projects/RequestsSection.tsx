@@ -2,66 +2,101 @@
 
 import { useEffect, useState } from "react";
 
+import { IM_Fell_French_Canon } from "next/font/google";
+import { Request } from "@/interfaces/request";
 import {
   createRequest,
   getRequestsByProject,
   updateRequest,
   deleteRequest,
 } from "@/lib/api/requests";
+import Spinner from "../ui/Spinner";
 
 interface Props {
   projectId: number;
 }
 
+const imFell =
+  IM_Fell_French_Canon({
+    subsets: ["latin"],
+    weight: "400",
+  });
+
 export default function RequestsSection({
   projectId,
 }: Props) {
 
-  const [requests, setRequests] = useState<any[]>([]);
-  const [newRequest, setNewRequest] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingValue, setEditingValue] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] =
+    useState<Request[]>([]);
+
+  const [
+    newRequest,
+    setNewRequest,
+  ] = useState("");
+
+  const [
+    editingId,
+    setEditingId,
+  ] = useState<number | null>(
+    null
+  );
+
+  const [
+    editingTitle,
+    setEditingTitle,
+  ] = useState("");
+
+  const [loading, setLoading] =
+    useState(true);
 
   // FETCH REQUESTS
+
   useEffect(() => {
 
-    const fetchRequests = async () => {
+    const fetchRequests =
+      async () => {
 
-      try {
+        try {
 
-        const data =
-          await getRequestsByProject(projectId);
+          const data =
+            await getRequestsByProject(
+              projectId
+            );
 
-        setRequests(data);
+          setRequests(data);
 
-      } catch (error) {
+        } catch (error) {
 
-        console.error(error);
+          console.error(error);
 
-      } finally {
+        } finally {
 
-        setLoading(false);
+          setLoading(false);
 
-      }
-    };
+        }
+      };
 
     fetchRequests();
 
   }, [projectId]);
 
   // CREATE REQUEST
+
   const handleAddRequest =
     async () => {
 
-      if (!newRequest.trim()) return;
+      if (
+        !newRequest.trim()
+      ) return;
 
       try {
 
         const createdRequest =
           await createRequest({
-            title: newRequest,
-            id_project: projectId,
+            title:
+              newRequest,
+            id_project:
+              projectId,
           });
 
         setRequests([
@@ -79,6 +114,7 @@ export default function RequestsSection({
     };
 
   // DELETE REQUEST
+
   const handleDeleteRequest =
     async (id: number) => {
 
@@ -102,43 +138,59 @@ export default function RequestsSection({
     };
 
   // START EDIT
+
   const handleStartEdit =
-    (request: any) => {
+    (request: Request) => {
 
-      setEditingId(request.id);
+      setEditingId(
+        request.id
+      );
 
-      setEditingValue(request.title);
-
+      setEditingTitle(
+        request.title
+      );
     };
 
   // SAVE EDIT
+
   const handleSaveEdit =
     async (id: number) => {
 
-      if (!editingValue.trim()) return;
+      if (
+        !editingTitle.trim()
+      ) return;
 
       try {
 
-        await updateRequest(id, {
-          title: editingValue,
-        });
+        await updateRequest(
+          id,
+          {
+            title:
+              editingTitle,
+          }
+        );
 
         setRequests(
 
-          requests.map((request) =>
+          requests.map(
+            (request) =>
 
-            request.id === id
-              ? {
-                  ...request,
-                  title: editingValue,
-                }
-              : request
+              request.id ===
+              id
+
+                ? {
+                    ...request,
+                    title:
+                      editingTitle,
+                  }
+
+                : request
           )
         );
 
         setEditingId(null);
 
-        setEditingValue("");
+        setEditingTitle("");
 
       } catch (error) {
 
@@ -149,39 +201,62 @@ export default function RequestsSection({
 
   return (
 
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 min-h-[500px]">
+    <div className="bg-lightgreen/50 h-125 rounded-2xl border border-dashed border-blackback shadow-sm p-5 flex flex-col overflow-hidden">
 
       {/* HEADER */}
+
       <div className="flex items-center justify-between">
 
-        <h2 className="text-lg font-semibold text-slate-800">
-          Peticiones
+        <h2
+          className={
+            imFell.className +
+            " text-3xl font-semibold"
+          }
+        >
+          Requests
         </h2>
 
-        <span className="text-sm text-slate-400">
+        <span
+          className={
+            imFell.className +
+            " flex justify-center align-middle w-9 h-9 text-3xl font-semibold border border-blackback rounded-full"
+          }
+        >
           {requests.length}
         </span>
 
       </div>
 
       {/* INPUT */}
+
       <div className="flex gap-2 mt-5">
 
         <input
           type="text"
-          placeholder="Nueva petición..."
+          placeholder="Nueva solicitud..."
           value={newRequest}
           onChange={(e) =>
             setNewRequest(
               e.target.value
             )
           }
-          className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          onKeyDown={(e) => {
+
+            if (
+              e.key === "Enter"
+            ) {
+
+              handleAddRequest();
+            }
+          }}
+          className="flex-1 px-4 py-2 rounded-xl border border-blackback text-sm"
         />
 
         <button
-          onClick={handleAddRequest}
-          className="px-4 py-2 bg-violet-600 text-white rounded-xl text-sm hover:bg-violet-700 transition"
+          onClick={
+            handleAddRequest
+          }
+          className="px-4 py-2 bg-blackback text-white rounded-xl text-sm hover:bg-lightpink/50 hover:border hover:border-blackback hover:text-blackback transition"
         >
           +
         </button>
@@ -189,93 +264,104 @@ export default function RequestsSection({
       </div>
 
       {/* REQUESTS */}
-      <div className="mt-6 space-y-3">
+
+      <div className="mt-6 flex-1 min-h-0 overflow-y-auto pr-1">
 
         {loading ? (
 
-          <p className="text-sm text-slate-400">
-            Cargando peticiones...
-          </p>
+          <Spinner />
 
-        ) : requests.length === 0 ? (
+        ) : requests.length ===
+          0 ? (
 
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+          <div className="p-4 rounded-xl flex flex-col items-center gap-2">
 
-            <p className="font-medium text-slate-700">
-              No hay peticiones todavía
+            <p className="font-medium text-blackback border-b border-blackback/50 rounded-xl px-3 py-1">
+              No hay solicitudes
             </p>
 
-            <p className="text-sm text-slate-400 mt-1">
-              Añade tu primera petición
+            <p className="text-sm text-blackback/70 mt-1">
+              Todo tranquilo por
+              ahora
             </p>
 
           </div>
 
         ) : (
 
-          requests.map((request) => (
+          requests.map(
+            (request) => (
 
-            <div
-              key={request.id}
-              className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-slate-50 transition"
-            >
+              <div
+                key={
+                  request.id
+                }
+                className="flex items-center justify-between gap-3 p-3 rounded-xl hover:border hover:border-blackback/50 transition"
+              >
 
-              {/* TITLE / EDIT */}
-              <div className="flex-1">
+                {/* CONTENT */}
 
-                {editingId === request.id ? (
+                <div className="flex-1">
 
-                  <input
-                    type="text"
-                    value={editingValue}
-                    onChange={(e) =>
-                      setEditingValue(
-                        e.target.value
-                      )
-                    }
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
-                  />
+                  {editingId ===
+                  request.id ? (
 
-                ) : (
+                    <input
+                      type="text"
+                      value={
+                        editingTitle
+                      }
+                      onChange={(
+                        e
+                      ) =>
+                        setEditingTitle(
+                          e.target
+                            .value
+                        )
+                      }
+                      onBlur={() =>
+                        handleSaveEdit(
+                          request.id
+                        )
+                      }
+                      onKeyDown={(
+                        e
+                      ) => {
 
-                  <p className="text-sm text-slate-700">
-                    {request.title}
-                  </p>
+                        if (
+                          e.key ===
+                          "Enter"
+                        ) {
 
-                )}
+                          handleSaveEdit(
+                            request.id
+                          );
+                        }
+                      }}
+                      autoFocus
+                      className="flex-1 w-full px-3 py-2 rounded-xl border border-blackback text-sm bg-transparent"
+                    />
 
-              </div>
+                  ) : (
 
-              {/* ACTIONS */}
-              <div className="flex items-center gap-3">
+                    <p
+                      onDoubleClick={() =>
+                        handleStartEdit(
+                          request
+                        )
+                      }
+                      className="text-sm text-slate-700 cursor-pointer"
+                    >
+                      {
+                        request.title
+                      }
+                    </p>
 
-                {editingId === request.id ? (
+                  )}
 
-                  <button
-                    onClick={() =>
-                      handleSaveEdit(
-                        request.id
-                      )
-                    }
-                    className="text-sm text-green-600 hover:underline"
-                  >
-                    Guardar
-                  </button>
+                </div>
 
-                ) : (
-
-                  <button
-                    onClick={() =>
-                      handleStartEdit(
-                        request
-                      )
-                    }
-                    className="text-sm text-violet-600 hover:underline"
-                  >
-                    Editar
-                  </button>
-
-                )}
+                {/* DELETE */}
 
                 <button
                   onClick={() =>
@@ -283,16 +369,24 @@ export default function RequestsSection({
                       request.id
                     )
                   }
-                  className="text-sm text-red-500 hover:underline"
+                  className="
+                    w-7 h-7
+                    flex items-center justify-center
+                    rounded-full
+                    bg-red-500
+                    text-white
+                    hover:scale-110
+                    transition
+                    text-sm
+                  "
                 >
-                  Eliminar
+                  ✕
                 </button>
 
               </div>
 
-            </div>
-
-          ))
+            )
+          )
 
         )}
 

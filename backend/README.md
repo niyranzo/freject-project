@@ -130,6 +130,7 @@ Relaciones principales (definidas en `src/models/index.js`):
 ### Clientes
 - `GET /api/clients`
 - `GET /api/clients/:id`
+- `GET /api/clients/project/:projectId`
 - `POST /api/clients`
 - `PUT /api/clients/:id`
 - `DELETE /api/clients/:id`

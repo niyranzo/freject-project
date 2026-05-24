@@ -1,27 +1,30 @@
 "use client";
 
-import { useState } from "react";
-
-import {
-  createClient,
-  getClients,
-} from "@/lib/api/clients";
+import { useEffect, useState } from "react";
+import { updateClient, getClients } from "@/lib/api/clients";
 
 interface Props {
-  showClientModal: boolean;
-  setShowClientModal: any;
+  showEditClientModal: boolean;
+  setShowEditClientModal: any;
   setClients: any;
+  selectedClient: any;
 }
 
-export default function CreateClientModal({
-  showClientModal,
-  setShowClientModal,
+export default function EditClientModal({
+  showEditClientModal,
+  setShowEditClientModal,
   setClients,
+  selectedClient,
 }: Props) {
 
-  const [clientName, setClientName] = useState("");
-  const [clientEmail, setClientEmail] = useState("");
-  const [clientCompany, setClientCompany] = useState("");
+  const [clientName, setClientName] =
+    useState(selectedClient?.name || "");
+
+  const [clientEmail, setClientEmail] =
+    useState(selectedClient?.email || "");
+
+  const [clientCompany, setClientCompany] =
+    useState(selectedClient?.company || "");
 
   const [clientLoading, setClientLoading] =
     useState(false);
@@ -29,25 +32,42 @@ export default function CreateClientModal({
   const [clientError, setClientError] =
     useState("");
 
-  if (!showClientModal) return null;
+    useEffect(() => {
 
-  const handleCreateClient = async () => {
+  if (selectedClient) {
+    setClientName(selectedClient.name || "");
+    setClientEmail(selectedClient.email || "");
+    setClientCompany(selectedClient.company || "");
+  }
+
+}, [selectedClient]);
+
+  if (!showEditClientModal) return null;
+
+  const handleEditClient = async () => {
 
     try {
 
       setClientLoading(true);
+
       setClientError("");
 
       const response =
-        await createClient({
-          name: clientName,
-          email: clientEmail,
-          company: clientCompany,
-        });
+        await updateClient(
+          selectedClient.id,
+          {
+            name: clientName,
+            email: clientEmail,
+            company: clientCompany,
+          }
+        );
 
       if (response.message) {
+
         setClientError(response.message);
+
         return;
+
       }
 
       const updatedClients =
@@ -55,7 +75,7 @@ export default function CreateClientModal({
 
       setClients(updatedClients);
 
-      setShowClientModal(false);
+      setShowEditClientModal(false);
 
     } catch (error: any) {
 
@@ -66,6 +86,7 @@ export default function CreateClientModal({
       setClientLoading(false);
 
     }
+
   };
 
   return (
@@ -75,39 +96,36 @@ export default function CreateClientModal({
       <div className="bg-skin w-full max-w-md rounded-2xl p-6 shadow-xl">
 
         <h2 className="text-xl font-semibold text-slate-900">
-          Nuevo cliente
+          Editar cliente
         </h2>
 
         <div className="space-y-4 mt-5">
 
           <input
             type="text"
-            placeholder="Nombre"
             value={clientName}
             onChange={(e) =>
               setClientName(e.target.value)
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blackback"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200"
           />
 
           <input
             type="email"
-            placeholder="Email"
             value={clientEmail}
             onChange={(e) =>
               setClientEmail(e.target.value)
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blackback"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200"
           />
 
           <input
             type="text"
-            placeholder="Empresa"
             value={clientCompany}
             onChange={(e) =>
               setClientCompany(e.target.value)
             }
-            className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blackback"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200"
           />
 
         </div>
@@ -126,7 +144,7 @@ export default function CreateClientModal({
 
           <button
             onClick={() =>
-              setShowClientModal(false)
+              setShowEditClientModal(false)
             }
             className="px-4 py-2 rounded-xl border border-slate-200 text-sm"
           >
@@ -134,13 +152,15 @@ export default function CreateClientModal({
           </button>
 
           <button
-            onClick={handleCreateClient}
+            onClick={handleEditClient}
             disabled={clientLoading}
-            className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+            className="px-4 py-2 bg-blackback text-white text-sm rounded-xl"
           >
-            {clientLoading
-              ? "Creando..."
-              : "Crear cliente"}
+            {
+              clientLoading
+                ? "Guardando..."
+                : "Guardar cambios"
+            }
           </button>
 
         </div>

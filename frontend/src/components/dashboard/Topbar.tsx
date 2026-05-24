@@ -4,19 +4,17 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IM_Fell_French_Canon } from "next/font/google";
 
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const imFell = IM_Fell_French_Canon({
   subsets: ["latin"],
   weight: "400",
-  // style: ["italic"],
 });
-
 
 export default function Topbar() {
 
   const router = useRouter();
+
   const [userName, setUserName] = useState("");
 
   useEffect(() => {
@@ -31,13 +29,14 @@ export default function Topbar() {
 
         const data = await res.json();
 
-        if (res.ok) {
-          setUserName(data.user.name);
-        }
+        if (res.ok) setUserName(data.user.name);
 
       } catch (error) {
+
         console.error(error);
+
       }
+
     };
 
     fetchData();
@@ -60,36 +59,71 @@ export default function Topbar() {
       console.error(error);
 
     }
+
   };
 
   return (
-    <div className="flex items-center justify-between mb-8">
+
+    <div className="flex items-start md:items-center justify-between gap-4 mb-8">
 
       {/* LEFT */}
+
       <div>
 
-        <p className={imFell.className + " text-xl text-blackback mt-1"}>
-          Bienvenido de nuevo, {userName}  <i className="fa-solid fa-mug-hot"></i>
+        {/* MOBILE */}
+
+        <div className="md:hidden">
+
+          <p className="text-sm text-slate-500">
+            Bienvenido de nuevo,
+          </p>
+
+          <h1 className={imFell.className + " text-4xl leading-none text-blackback mt-1"}>
+            {userName}
+          </h1>
+
+        </div>
+
+        {/* DESKTOP */}
+
+        <p className={imFell.className + " hidden md:block text-xl text-blackback mt-1"}>
+          Bienvenido de nuevo,  <span className="font-bold text-2xl">{userName}</span> <i className="fa-solid fa-mug-hot"></i>
         </p>
 
       </div>
 
       {/* RIGHT */}
-      <div className="flex items-center gap-3">
+
+      <div className="flex items-center gap-3 shrink-0">
+
+        {/* DESKTOP BUTTON */}
 
         <button
           onClick={handleLogout}
-          className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+          className="hidden md:flex px-4 py-2 bg-blackback text-white text-sm rounded-xl hover:opacity-80 transition"
         >
           Cerrar sesión
         </button>
 
-        <div className="w-9 h-9 rounded-full text-black flex items-center justify-center text-sm font-medium border border-blackback">
+        {/* MOBILE BUTTON */}
+
+        <button
+          onClick={handleLogout}
+          className="md:hidden w-10 h-10 rounded-full bg-blackback text-white flex items-center justify-center"
+        >
+          <i className="fa-solid fa-right-from-bracket"></i>
+        </button>
+
+        {/* AVATAR */}
+
+        <div className="w-10 h-10 rounded-full border border-blackback flex items-center justify-center text-sm font-medium">
           {userName?.charAt(0).toUpperCase()}
         </div>
 
       </div>
 
     </div>
+
   );
+
 }

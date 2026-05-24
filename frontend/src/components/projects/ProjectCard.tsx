@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+
 import { IM_Fell_French_Canon } from "next/font/google";
 
 const imFell = IM_Fell_French_Canon({
@@ -17,13 +18,47 @@ interface ProjectCardProps {
   };
 }
 
+const statusConfig = {
+
+  pending: {
+    label: "Pendiente",
+    className:
+      "bg-yellow-100 text-yellow-700",
+  },
+
+  in_progress: {
+    label: "En progreso",
+    className:
+      "bg-blue-100 text-blue-700",
+  },
+
+  completed: {
+    label: "Completado",
+    className:
+      "bg-emerald-100 text-emerald-700",
+  },
+
+  cancelled: {
+    label: "Cancelado",
+    className:
+      "bg-red-100 text-red-700",
+  },
+
+};
+
 export default function ProjectCard({
   project,
 }: ProjectCardProps) {
 
   const router = useRouter();
 
+  const currentStatus =
+    statusConfig[
+      project.status as keyof typeof statusConfig
+    ];
+
   return (
+
     <div
       onClick={() =>
         router.push(`/projects/${project.id}`)
@@ -33,7 +68,12 @@ export default function ProjectCard({
 
       <div className="flex justify-center bg-blackback p-4 rounded-t-2xl">
 
-        <h3 className={imFell.className + " text-white text-xl"}>
+        <h3
+          className={
+            imFell.className +
+            " text-white text-xl"
+          }
+        >
           {project.name}
         </h3>
 
@@ -49,8 +89,10 @@ export default function ProjectCard({
             Estado
           </span>
 
-          <span className="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-600 text-xs font-medium capitalize">
-            {project.status}
+          <span
+            className={`px-2 py-1 rounded-lg text-xs font-medium capitalize ${currentStatus.className}`}
+          >
+            {currentStatus.label}
           </span>
 
         </div>
@@ -84,6 +126,9 @@ export default function ProjectCard({
         </div>
 
       </div>
+
     </div>
+
   );
+
 }

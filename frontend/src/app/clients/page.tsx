@@ -6,11 +6,12 @@ import { IM_Fell_French_Canon } from "next/font/google";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Topbar from "@/components/dashboard/Topbar";
 import { Client } from "@/interfaces/client";
-
-import {
-  getClients,
-  createClient
-} from "@/lib/api/clients";
+import CreateClientModal from "@/components/dashboard/modals/CreateClientModal";
+import EditClientModal from "@/components/dashboard/modals/EditClientModal";
+import DeleteClientModal from "@/components/dashboard/modals/DeleteClientModal";
+import { getClients } from "@/lib/api/clients";
+import MobileNavbar from "@/components/dashboard/MobileNavbar";
+import Spinner from "@/components/ui/Spinner";
 
 const imFellItalic = IM_Fell_French_Canon({
   subsets: ["latin"],
@@ -26,15 +27,15 @@ const imFell = IM_Fell_French_Canon({
 export default function ClientsPage() {
 
   const [clients, setClients] = useState<Client[]>([]);
-
   const [loading, setLoading] = useState(true);
-
-  const [showModal, setShowModal] = useState(false);
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [company, setCompany] = useState("");
-
+  const [showEditClientModal, setShowEditClientModal] = useState(false);
+  const [showDeleteClientModal, setShowDeleteClientModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [search, setSearch] = useState("");
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(search.toLowerCase())
+  );
   
 
   const fetchClients = async () => {
@@ -53,31 +54,6 @@ export default function ClientsPage() {
     }
   };
 
-  const handleCreateClient = async () => {
-
-    try {
-
-      await createClient({
-        name,
-        email,
-        company,
-      });
-
-      setShowModal(false);
-
-      setName("");
-      setEmail("");
-      setCompany("");
-
-      fetchClients();
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-  };
-
   useEffect(() => {
 
     fetchClients();
@@ -85,17 +61,13 @@ export default function ClientsPage() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-skin">
-
+    <div className="flex flex-col md:flex-row min-h-screen bg-skin">
+      <MobileNavbar />
       <Sidebar />
-
-      <main className="flex-1 p-8 overflow-y-auto">
-
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto w-full">
         <Topbar />
-
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <div>
 
             <h2 className={imFellItalic.className + " text-5xl font-bold text-slate-900"}>
@@ -107,40 +79,43 @@ export default function ClientsPage() {
             </p>
 
           </div>
+          <div className="flex items-center gap-3">
 
-          <button
-            onClick={() => setShowModal(true)}
-            className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
-          >
-            + Nuevo cliente
-          </button>
+            <input type="text" placeholder="Buscar cliente..." value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-100 px-4 py-2 border text-blackback text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+            />
+
+            <button
+              onClick={() => setShowClientModal(true)}
+              className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+            >
+              + Nuevo cliente
+            </button>
+          </div>
 
         </div>
 
-        {/* Clients */}
-        <div className="grid grid-cols-3 gap-4">
-
+        {/* Clients */}          
           {loading ? (
 
-            <p>Cargando clientes...</p>
+            <Spinner />
 
-          ) : clients.length === 0 ? (
+          ) : filteredClients.length === 0 ? (
 
-            <div className="bg-white border border-slate-100 rounded-2xl p-8 text-center col-span-3">
-
-              <h3 className="text-lg font-semibold text-slate-800">
-                No tienes clientes todavía
+            <div className="flex flex-col items-center justify-center text-center mt-24">
+              <h3 className="text-2xl font-semibold text-blackback mt-6 border-b border-blackback/50 rounded-xl px-3 py-1">
+                No tienes Clientes todavía o no se encontró el que buscabas
               </h3>
 
-              <p className="text-slate-400 mt-2">
-                Crea tu primer cliente
+              <p className="text-slate-500 mt-2 max-w-md">
+                Empieza creando tu primer cliente para organizar mejor tus proyectos freelance con Freject.
               </p>
-
             </div>
 
           ) : (
-
-            clients.map((client: Client) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredClients.map((client: Client) => (
 
               <div
                 key={client.id}
@@ -181,14 +156,13 @@ export default function ClientsPage() {
                   <div className="h-px w-mg bg-gray-300"></div>
                   <div className="flex justify-between">
                     <button
-                    onClick={() => setShowModal(true)}
+                     onClick={() => {setSelectedClient(client);setShowEditClientModal(true);}}
                     className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
                   >
                     Editar cliente
                   </button>
                   <button
-                    onClick={() => setShowModal(true)}
-                    className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
+                    onClick={() => {setSelectedClient(client);setShowDeleteClientModal(true);}}                    className="px-4 py-2 bg-blackback border text-white text-sm rounded-xl hover:bg-white/0 hover:text-blackback hover:border hover:border-blackback transition cursor-pointer"
                   >
                     Borrar cliente
                   </button>
@@ -197,83 +171,37 @@ export default function ClientsPage() {
 
               </div>
 
-            ))
-
+            ))}
+          </div>
           )}
 
-        </div>
+      <CreateClientModal
+        showClientModal={showClientModal}
+        setShowClientModal={setShowClientModal}
+        setClients={setClients}
+      />
 
-        {/* Modal */}
-        {showModal && (
+      <EditClientModal
+        showEditClientModal={
+          showEditClientModal
+        }
+        setShowEditClientModal={
+          setShowEditClientModal
+        }
+        setClients={setClients}
+        selectedClient={selectedClient}
+      />
 
-          <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-
-            <div className="bg-white w-full max-w-md rounded-2xl p-6 shadow-xl">
-
-              <h2 className="text-xl font-semibold text-slate-900">
-                Nuevo cliente
-              </h2>
-
-              <div className="space-y-4 mt-5">
-
-                <input
-                  type="text"
-                  placeholder="Nombre"
-                  value={name}
-                  onChange={(e) =>
-                    setName(e.target.value)
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200"
-                />
-
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) =>
-                    setEmail(e.target.value)
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Empresa"
-                  value={company}
-                  onChange={(e) =>
-                    setCompany(e.target.value)
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200"
-                />
-
-              </div>
-
-              <div className="flex justify-end gap-3 mt-6">
-
-                <button
-                  onClick={() =>
-                    setShowModal(false)
-                  }
-                  className="px-4 py-2 rounded-xl border border-slate-200"
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  onClick={handleCreateClient}
-                  className="px-4 py-2 bg-violet-600 text-white rounded-xl"
-                >
-                  Crear cliente
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        )}
-
+      <DeleteClientModal
+        showDeleteClientModal={
+          showDeleteClientModal
+        }
+        setShowDeleteClientModal={
+          setShowDeleteClientModal
+        }
+        setClients={setClients}
+        selectedClient={selectedClient}
+      />
       </main>
     </div>
   );

@@ -1,3 +1,5 @@
+import { Client } from "./client";
+
 export type ProjectStatus =
   | "pending"
   | "in_progress"
@@ -5,6 +7,7 @@ export type ProjectStatus =
   | "cancelled";
 
 export interface Project {
+
   id: number;
 
   id_user: number;
@@ -16,4 +19,7 @@ export interface Project {
   status: ProjectStatus;
 
   create_date: string;
+
+  Client?: Client;
+
 }

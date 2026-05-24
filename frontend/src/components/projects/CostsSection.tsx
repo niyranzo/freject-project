@@ -2,57 +2,96 @@
 
 import { useEffect, useState } from "react";
 
+import { IM_Fell_French_Canon } from "next/font/google";
+import { Cost } from "@/interfaces/cost";
 import {
   createCost,
   getCostsByProject,
   updateCost,
   deleteCost,
 } from "@/lib/api/costs";
+import Spinner from "../ui/Spinner";
 
 interface Props {
   projectId: number;
 }
 
+const imFell =
+  IM_Fell_French_Canon({
+    subsets: ["latin"],
+    weight: "400",
+  });
+
 export default function CostsSection({
   projectId,
 }: Props) {
 
-  const [costs, setCosts] = useState<any[]>([]);
-  const [newCostTitle, setNewCostTitle] = useState("");
-  const [newCostAmount, setNewCostAmount] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingTitle, setEditingTitle] = useState("");
-  const [editingAmount, setEditingAmount] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [costs, setCosts] =
+    useState<Cost[]>([]);
+
+  const [
+    newCostTitle,
+    setNewCostTitle,
+  ] = useState("");
+
+  const [
+    newCostAmount,
+    setNewCostAmount,
+  ] = useState("");
+
+  const [
+    editingId,
+    setEditingId,
+  ] = useState<number | null>(
+    null
+  );
+
+  const [
+    editingTitle,
+    setEditingTitle,
+  ] = useState("");
+
+  const [
+    editingAmount,
+    setEditingAmount,
+  ] = useState("");
+
+  const [loading, setLoading] =
+    useState(true);
 
   // FETCH COSTS
+
   useEffect(() => {
 
-    const fetchCosts = async () => {
+    const fetchCosts =
+      async () => {
 
-      try {
+        try {
 
-        const data =
-          await getCostsByProject(projectId);
+          const data =
+            await getCostsByProject(
+              projectId
+            );
 
-        setCosts(data);
+          setCosts(data);
 
-      } catch (error) {
+        } catch (error) {
 
-        console.error(error);
+          console.error(error);
 
-      } finally {
+        } finally {
 
-        setLoading(false);
+          setLoading(false);
 
-      }
-    };
+        }
+      };
 
     fetchCosts();
 
   }, [projectId]);
 
   // CREATE COST
+
   const handleAddCost =
     async () => {
 
@@ -65,9 +104,13 @@ export default function CostsSection({
 
         const createdCost =
           await createCost({
-            title: newCostTitle,
-            amount: Number(newCostAmount),
-            id_project: projectId,
+            title:
+              newCostTitle,
+            amount: Number(
+              newCostAmount
+            ),
+            id_project:
+              projectId,
           });
 
         setCosts([
@@ -76,6 +119,7 @@ export default function CostsSection({
         ]);
 
         setNewCostTitle("");
+
         setNewCostAmount("");
 
       } catch (error) {
@@ -86,6 +130,7 @@ export default function CostsSection({
     };
 
   // DELETE COST
+
   const handleDeleteCost =
     async (id: number) => {
 
@@ -109,20 +154,23 @@ export default function CostsSection({
     };
 
   // START EDIT
+
   const handleStartEdit =
-    (cost: any) => {
+    (cost: Cost) => {
 
       setEditingId(cost.id);
 
-      setEditingTitle(cost.title);
-
-      setEditingAmount(
-        cost.amount
+      setEditingTitle(
+        cost.title
       );
 
+      setEditingAmount(
+        String(cost.amount)
+      );
     };
 
   // SAVE EDIT
+
   const handleSaveEdit =
     async (id: number) => {
 
@@ -134,8 +182,11 @@ export default function CostsSection({
       try {
 
         await updateCost(id, {
-          title: editingTitle,
-          amount: Number(editingAmount),
+          title:
+            editingTitle,
+          amount: Number(
+            editingAmount
+          ),
         });
 
         setCosts(
@@ -145,8 +196,10 @@ export default function CostsSection({
             cost.id === id
               ? {
                   ...cost,
-                  title: editingTitle,
-                  amount: editingAmount,
+                  title:
+                    editingTitle,
+                  amount:
+                    editingAmount,
                 }
               : cost
           )
@@ -166,39 +219,60 @@ export default function CostsSection({
     };
 
   // TOTAL
+
   const totalCosts =
     costs.reduce(
       (acc, cost) =>
-        acc + Number(cost.amount),
+        acc +
+        Number(cost.amount),
       0
     );
 
   return (
 
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 min-h-[500px]">
+    <div className="bg-lightpurple/50 h-125 rounded-2xl border border-dashed border-blackback shadow-sm p-5 flex flex-col overflow-hidden">
 
       {/* HEADER */}
+
       <div className="flex items-center justify-between">
 
         <div>
 
-          <h2 className="text-lg font-semibold text-slate-800">
-            Costos
+          <h2
+            className={
+              imFell.className +
+              " text-3xl font-semibold"
+            }
+          >
+            Costs
           </h2>
 
-          <p className="text-sm text-slate-400 mt-1">
-            Total: €{totalCosts.toFixed(2)}
+          <p className="text-sm mt-1">
+            Total:
+            {" "}
+            <span className="text-red-500 font-bold">
+              €
+              {totalCosts.toFixed(
+                2
+              )}
+            </span>
           </p>
 
         </div>
 
-        <span className="text-sm text-slate-400">
+        <span
+          className={
+            imFell.className +
+            " flex justify-center align-middle w-9 h-9 text-3xl font-semibold border border-blackback rounded-full"
+          }
+        >
           {costs.length}
         </span>
 
       </div>
 
       {/* INPUTS */}
+
       <div className="flex gap-2 mt-5">
 
         <input
@@ -210,7 +284,7 @@ export default function CostsSection({
               e.target.value
             )
           }
-          className="flex-1 px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="flex-1 px-4 py-2 rounded-xl border border-blackback text-sm"
         />
 
         <input
@@ -222,12 +296,14 @@ export default function CostsSection({
               e.target.value
             )
           }
-          className="w-28 px-4 py-2 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+          className="w-28 px-4 py-2 rounded-xl border border-blackback text-sm"
         />
 
         <button
-          onClick={handleAddCost}
-          className="px-4 py-2 bg-violet-600 text-white rounded-xl text-sm hover:bg-violet-700 transition"
+          onClick={
+            handleAddCost
+          }
+          className="px-4 py-2 bg-blackback text-white rounded-xl text-sm hover:bg-lightpink/50 hover:border hover:border-blackback hover:text-blackback transition"
         >
           +
         </button>
@@ -235,24 +311,23 @@ export default function CostsSection({
       </div>
 
       {/* COSTS */}
-      <div className="mt-6 space-y-3">
+
+      <div className="mt-6 flex-1 min-h-0 overflow-y-auto pr-1">
 
         {loading ? (
+          <Spinner />
+        ) : costs.length ===
+          0 ? (
 
-          <p className="text-sm text-slate-400">
-            Cargando costos...
-          </p>
+          <div className="p-4 rounded-xl flex flex-col items-center gap-2">
 
-        ) : costs.length === 0 ? (
-
-          <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-
-            <p className="font-medium text-slate-700">
+            <p className="font-medium text-blackback border-b border-blackback/50 rounded-xl px-3 py-1">
               No hay costos
             </p>
 
-            <p className="text-sm text-slate-400 mt-1">
-              Excelente margen por ahora
+            <p className="text-sm text-blackback/70 mt-1">
+              Excelente margen
+              por ahora
             </p>
 
           </div>
@@ -263,37 +338,60 @@ export default function CostsSection({
 
             <div
               key={cost.id}
-              className="flex items-center justify-between gap-3 p-3 rounded-xl hover:bg-slate-50 transition"
+              className="flex items-center justify-between gap-3 p-3 rounded-xl hover:border hover:border-blackback/50 transition"
             >
 
               {/* CONTENT */}
+
               <div className="flex-1">
 
-                {editingId === cost.id ? (
+                {editingId ===
+                cost.id ? (
 
                   <div className="flex gap-2">
 
                     <input
                       type="text"
-                      value={editingTitle}
-                      onChange={(e) =>
+                      value={
+                        editingTitle
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setEditingTitle(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
-                      className="flex-1 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="flex-1 px-3 py-2 rounded-xl border border-blackback text-sm bg-transparent"
                     />
 
                     <input
                       type="number"
-                      value={editingAmount}
-                      onChange={(e) =>
+                      value={
+                        editingAmount
+                      }
+                      onChange={(
+                        e
+                      ) =>
                         setEditingAmount(
-                          e.target.value
+                          e.target
+                            .value
                         )
                       }
-                      className="w-28 px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="w-28 px-3 py-2 rounded-xl border border-blackback text-sm bg-transparent"
                     />
+
+                    <button
+                      onClick={() =>
+                        handleSaveEdit(
+                          cost.id
+                        )
+                      }
+                      className="text-xs px-3 py-1 rounded-lg bg-blackback text-white hover:opacity-80 transition"
+                    >
+                      Guardar
+                    </button>
 
                   </div>
 
@@ -301,12 +399,26 @@ export default function CostsSection({
 
                   <div className="flex items-center justify-between">
 
-                    <p className="text-sm text-slate-700">
-                      {cost.title}
-                    </p>
+                    <div
+                      onDoubleClick={() =>
+                        handleStartEdit(
+                          cost
+                        )
+                      }
+                      className="cursor-pointer"
+                    >
+
+                      <p className="text-sm text-slate-700">
+                        {cost.title}
+                      </p>
+
+                    </div>
 
                     <p className="text-sm font-medium text-red-500">
-                      - €{Number(cost.amount).toFixed(2)}
+                      - €
+                      {Number(
+                        cost.amount
+                      ).toFixed(2)}
                     </p>
 
                   </div>
@@ -315,49 +427,27 @@ export default function CostsSection({
 
               </div>
 
-              {/* ACTIONS */}
-              <div className="flex items-center gap-3">
+              {/* DELETE */}
 
-                {editingId === cost.id ? (
-
-                  <button
-                    onClick={() =>
-                      handleSaveEdit(
-                        cost.id
-                      )
-                    }
-                    className="text-sm text-green-600 hover:underline"
-                  >
-                    Guardar
-                  </button>
-
-                ) : (
-
-                  <button
-                    onClick={() =>
-                      handleStartEdit(
-                        cost
-                      )
-                    }
-                    className="text-sm text-violet-600 hover:underline"
-                  >
-                    Editar
-                  </button>
-
-                )}
-
-                <button
-                  onClick={() =>
-                    handleDeleteCost(
-                      cost.id
-                    )
-                  }
-                  className="text-sm text-red-500 hover:underline"
-                >
-                  Eliminar
-                </button>
-
-              </div>
+              <button
+                onClick={() =>
+                  handleDeleteCost(
+                    cost.id
+                  )
+                }
+                className="
+                  w-7 h-7
+                  flex items-center justify-center
+                  rounded-full
+                  bg-red-500
+                  text-white
+                  hover:scale-110
+                  transition
+                  text-sm
+                "
+              >
+                ✕
+              </button>
 
             </div>
 
@@ -370,4 +460,4 @@ export default function CostsSection({
     </div>
 
   );
-}
+} 

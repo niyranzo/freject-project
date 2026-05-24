@@ -1,4 +1,4 @@
-import Client from '../models/Client.js';
+import { Project, Client, } from "../models/index.js";
 
 export const getClients = async (req, res) => {
   const clients = await Client.findAll({
@@ -21,6 +21,27 @@ export const getClient = async (req, res) => {
   }
 
   res.json(client);
+};
+
+export const getClientByProject = async (req,res) => {
+  const project = await Project.findByPk(
+    req.params.projectId,
+    {
+      include: {
+        model: Client,
+        as: "client",
+      }
+    }
+  );
+
+  if (!project || !project.Client) {
+    return res.status(404).json({
+      message:
+        "Cliente no encontrado para este proyecto"
+    });
+  }
+
+  res.json(project.Client);
 };
 
 export const createClient = async (req, res) => {
@@ -83,6 +104,21 @@ export const deleteClient = async (req, res) => {
 
   if (!client) {
     return res.status(404).json({ message: 'Cliente no encontrado' });
+  }
+
+  const projects = await Project.findOne({
+    where: {
+      id_client: client.id
+    }
+  });
+
+  if (projects) {
+
+    return res.status(400).json({
+      message:
+        'No puedes eliminar este cliente porque tiene proyectos asociados'
+    });
+
   }
 
   await client.destroy();

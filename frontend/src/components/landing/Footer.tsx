@@ -2,31 +2,32 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className=" border-t border-slate-100 py-12">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
-              <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                <path d="M2 7h4M8 4l3 3-3 3" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <span className="text-sm font-semibold text-slate-700">Freject</span>
-            <span className="text-slate-300 mx-2">·</span>
-            <span className="text-xs text-slate-400">Gestión freelance reinventada</span>
-          </div>
+    <footer className="border-t border-black/8 py-10 px-6">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
 
-          <div className="flex items-center gap-6 text-sm text-slate-400">
-            <Link href="/privacy" className="hover:text-slate-600 transition-colors">Privacidad</Link>
-            <Link href="/terms" className="hover:text-slate-600 transition-colors">Términos</Link>
-            <Link href="/blog" className="hover:text-slate-600 transition-colors">Blog</Link>
-            <Link href="mailto:hola@freject.io" className="hover:text-slate-600 transition-colors">Contacto</Link>
+        {/* Brand */}
+        <div className="flex items-center gap-3">
+          <div className="w-7 h-7 rounded-xl bg-[#1A1A18] flex items-center justify-center font-serif text-sm text-white">
+            F
           </div>
-
-          <div className="text-xs text-slate-300">
-            © 2025 Freject. Todos los derechos reservados.
-          </div>
+          <span className="font-serif text-lg text-[#1A1A18]">Freject</span>
+          <span className="text-black/20 mx-1">·</span>
+          <span className="text-xs text-[#9A9A8E]">Gestión freelance reinventada</span>
         </div>
+
+        {/* Links */}
+        <div className="flex items-center gap-6 text-sm text-[#9A9A8E]">
+          <Link href="/privacy" className="hover:text-[#1A1A18] transition-colors">Privacidad</Link>
+          <Link href="/terms" className="hover:text-[#1A1A18] transition-colors">Términos</Link>
+          <Link href="/blog" className="hover:text-[#1A1A18] transition-colors">Blog</Link>
+          <Link href="mailto:hola@freject.io" className="hover:text-[#1A1A18] transition-colors">Contacto</Link>
+        </div>
+
+        {/* Copyright */}
+        <div className="text-xs text-[#9A9A8E]">
+          © 2025 Freject. Todos los derechos reservados.
+        </div>
+
       </div>
     </footer>
   );
